@@ -16,3 +16,6 @@ migrate: (flyway "migrate")
 
 # Print migration details
 info: (flyway "info")
+
+# Reset database
+reset: (flyway "clean")
