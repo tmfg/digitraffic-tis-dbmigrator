@@ -14,7 +14,14 @@ CREATE TABLE queue_phase
     entry_id    BIGINT       NOT NULL,
     "name"      TEXT         NOT NULL,
     started TIMESTAMP(3) NOT NULL DEFAULT NOW(),
-    CONSTRAINT fk_queue_step_queue_entry_entry_id FOREIGN KEY (entry_id) REFERENCES queue_entry (id) ON DELETE CASCADE
+    updated TIMESTAMP(3),
+    completed TIMESTAMP(3),
+    CONSTRAINT fk_queue_step_queue_entry_entry_id FOREIGN KEY (entry_id) REFERENCES queue_entry (id) ON DELETE CASCADE,
+    UNIQUE (entry_id, name)
+);
+CREATE INDEX idx_queue_phase_name ON queue_phase
+(
+    name
 );
 
 CREATE TABLE queue_validation_input
