@@ -13,7 +13,7 @@ CREATE TABLE tis_cooperation
     type         tis_cooperation_type DEFAULT 'authority-provider',
     partner_a_id BIGINT NOT NULL,
     partner_b_id BIGINT NOT NULL,
-    UNIQUE (type, partner_b_id, partner_b_id),
+    UNIQUE (type, partner_a_id, partner_b_id),
     CONSTRAINT fk_tis_collaboration_partner_a_id FOREIGN KEY (partner_a_id) REFERENCES tis_organization (id) ON DELETE CASCADE,
     CONSTRAINT fk_tis_collaboration_partner_b_id FOREIGN KEY (partner_b_id) REFERENCES tis_organization (id) ON DELETE CASCADE
 );
