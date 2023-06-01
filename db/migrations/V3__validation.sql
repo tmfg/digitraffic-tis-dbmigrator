@@ -30,5 +30,3 @@ CREATE TABLE validation_ruleset
     description      TEXT                        NOT NULL,
     CONSTRAINT fk_validation_ruleset_owner_id FOREIGN KEY (owner_id) REFERENCES tis_organization (id) ON DELETE CASCADE
 );
-
-INSERT INTO tis_organization (business_id, name) VALUES ('2942108-7', 'Fintraffic Oy');
