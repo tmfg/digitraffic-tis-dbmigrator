@@ -30,3 +30,7 @@ CREATE TABLE validation_ruleset
     description      TEXT                        NOT NULL,
     CONSTRAINT fk_validation_ruleset_owner_id FOREIGN KEY (owner_id) REFERENCES tis_organization (id) ON DELETE CASCADE
 );
+CREATE INDEX idx_validation_ruleset_identifying_name ON validation_ruleset
+(
+    identifying_name
+);
