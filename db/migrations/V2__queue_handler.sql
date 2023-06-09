@@ -6,7 +6,10 @@ CREATE TABLE queue_entry
     url         TEXT        NOT NULL,
     business_id TEXT        NOT NULL,
     etag        TEXT,
-    metadata    JSONB
+    metadata    JSONB,
+    started   TIMESTAMP(3),
+    updated   TIMESTAMP(3),
+    completed TIMESTAMP(3)
 );
 
 CREATE TABLE queue_phase
