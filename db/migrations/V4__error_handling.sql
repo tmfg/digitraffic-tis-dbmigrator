@@ -9,5 +9,5 @@ CREATE TABLE error_message
     raw        BYTEA,
     CONSTRAINT fk_error_message_queue_entry_entry_id FOREIGN KEY (entry_id) REFERENCES queue_entry (id) ON DELETE CASCADE,
     CONSTRAINT fk_error_message_queue_phase_phase_id FOREIGN KEY (phase_id) REFERENCES queue_phase (id) ON DELETE CASCADE,
-    CONSTRAINT fk_error_message_validation_ruleset_validation_ruleset_id FOREIGN KEY (ruleset_id) REFERENCES validation_ruleset (id) ON DELETE CASCADE
+    CONSTRAINT fk_error_message_ruleset_id FOREIGN KEY (ruleset_id) REFERENCES ruleset (id) ON DELETE CASCADE
 );
