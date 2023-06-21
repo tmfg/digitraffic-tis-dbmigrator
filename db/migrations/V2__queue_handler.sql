@@ -7,9 +7,10 @@ CREATE TABLE queue_entry
     business_id TEXT        NOT NULL,
     etag        TEXT,
     metadata    JSONB,
-    started   TIMESTAMP(3),
-    updated   TIMESTAMP(3),
-    completed TIMESTAMP(3)
+    created     TIMESTAMP(3) NOT NULL DEFAULT NOW(),
+    started     TIMESTAMP(3),
+    updated     TIMESTAMP(3),
+    completed   TIMESTAMP(3)
 );
 
 CREATE TABLE queue_phase
