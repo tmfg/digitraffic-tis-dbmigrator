@@ -7,7 +7,7 @@ CREATE TABLE error
     ruleset_id BIGINT      NOT NULL,
     "message"  TEXT,
     raw        BYTEA,
-    CONSTRAINT fk_error_message_entry_entry_id FOREIGN KEY (entry_id) REFERENCES entry (id) ON DELETE CASCADE,
-    CONSTRAINT fk_error_message_phase_phase_id FOREIGN KEY (phase_id) REFERENCES phase (id) ON DELETE CASCADE,
-    CONSTRAINT fk_error_message_ruleset_id FOREIGN KEY (ruleset_id) REFERENCES ruleset (id) ON DELETE CASCADE
+    CONSTRAINT fk_error_entry_entry_id FOREIGN KEY (entry_id) REFERENCES entry (id) ON DELETE CASCADE,
+    CONSTRAINT fk_error_phase_phase_id FOREIGN KEY (phase_id) REFERENCES phase (id) ON DELETE CASCADE,
+    CONSTRAINT fk_error_ruleset_id FOREIGN KEY (ruleset_id) REFERENCES ruleset (id) ON DELETE CASCADE
 );
