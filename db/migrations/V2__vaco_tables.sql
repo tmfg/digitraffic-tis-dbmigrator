@@ -34,7 +34,8 @@ CREATE TABLE entry
     created     TIMESTAMP(3) NOT NULL DEFAULT NOW(),
     started     TIMESTAMP(3),
     updated     TIMESTAMP(3),
-    completed   TIMESTAMP(3)
+    completed   TIMESTAMP(3),
+    CONSTRAINT fk_organization_business_id FOREIGN KEY (business_id) REFERENCES organization (business_id) ON DELETE CASCADE
 );
 
 CREATE TABLE phase
