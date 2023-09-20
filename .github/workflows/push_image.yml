@@ -43,7 +43,7 @@ jobs:
           ECR_REPOSITORY: "digitraffic-tis-dbmigrator"
           IMAGE_TAG: ${{ steps.version.outputs.version }}
         run: |
-          docker built -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
           docker tag $ECR_REGISTRY/$ECR_REPOSITORY:latest $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
