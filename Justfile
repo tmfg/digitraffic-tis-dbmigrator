@@ -9,6 +9,9 @@ flyway cmd="help":
     --rm \
     -v {{justfile_directory()}}/db/migrations:/flyway/sql \
     -v {{justfile_directory()}}/db/flyway.conf:/flyway/conf/flyway.conf:ro \
+    -e FLYWAY_URL='jdbc:postgresql://host.docker.internal:54321/vaco' \
+    -e FLYWAY_USER=postgres \
+    -e FLYWAY_PASSWORD=dwULL632mdJZ \
     flyway/flyway:9 {{cmd}}
 
 # Run database migrations
