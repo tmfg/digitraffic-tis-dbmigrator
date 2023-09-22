@@ -15,6 +15,8 @@ ON CONFLICT (identifying_name)
                        description = 'Canonical GTFS Validator by MobilityData, version v4.0.0',
                        type = 'validation_syntax';
 
+SELECT upsert_ruleset('2942108-7', 'gtfs.canonical.v4_1_0', 'Canonical GTFS Validator by MobilityData, version v4.1.0', 'validation_syntax');
+
 INSERT INTO ruleset (owner_id, category, identifying_name, description, type)
      VALUES ((SELECT id FROM organization WHERE business_id = '2942108-7'),
              'generic',
