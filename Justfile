@@ -20,5 +20,8 @@ migrate: (flyway "migrate")
 # Print migration details
 info: (flyway "info")
 
+# Repair schema history, use if migrations conflict due to checksum mismatch
+repair: (flyway "repair")
+
 # Reset database
 reset: (flyway "clean")
