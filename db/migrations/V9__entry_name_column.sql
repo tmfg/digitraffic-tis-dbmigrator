@@ -1,1 +1,1 @@
-ALTER TABLE entry ADD column "name" TEXT NOT NULL;
+ALTER TABLE entry ADD column "name" TEXT NOT NULL DEFAULT '';
