@@ -5,3 +5,11 @@ ALTER TABLE organization
 
 ALTER TABLE entry
     RENAME CONSTRAINT fk_organization_business_id TO fk_entry_company_business_id;
+
+-- Similarly, cooperation is technically correct but sounds a bit too unnatural, so we opted for a more natural term for
+-- it.
+ALTER TABLE cooperation
+    RENAME TO partnership;
+
+ALTER TYPE cooperation_type
+    RENAME TO partnership_type;
