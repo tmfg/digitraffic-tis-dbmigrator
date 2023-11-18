@@ -1,4 +1,4 @@
-INSERT INTO organization (business_id, name)
+INSERT INTO company (business_id, name)
      VALUES ('2942108-7', 'Fintraffic Oy')
 ON CONFLICT (business_id)
          DO UPDATE SET name = 'Fintraffic Oy';
@@ -24,7 +24,7 @@ DECLARE
 BEGIN
     RETURN QUERY
         INSERT INTO ruleset (owner_id, category, identifying_name, description, type, format, dependencies)
-            VALUES ((SELECT id FROM organization WHERE business_id = _business_id),
+            VALUES ((SELECT id FROM company WHERE business_id = _business_id),
                     _category,
                     _identifying_name,
                     _description,
@@ -33,7 +33,7 @@ BEGIN
                     _deps)
             ON CONFLICT (identifying_name)
                 DO UPDATE SET category = _category,
-                    owner_id = (SELECT id FROM organization WHERE business_id = _business_id),
+                    owner_id = (SELECT id FROM company WHERE business_id = _business_id),
                     description = _description,
                     type = _type,
                     format = _transit_data_format,
