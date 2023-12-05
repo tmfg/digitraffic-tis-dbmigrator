@@ -48,9 +48,6 @@ SELECT upsert_ruleset('2942108-7', 'gtfs', 'gtfs.canonical.v4_1_0', 'Canonical G
 SELECT upsert_ruleset('2942108-7', 'netex', 'netex.entur.v1_0_1', 'NeTEx Validator by Entur, version v1.0.1', 'validation_syntax', 'generic', ARRAY ['prepare.download', 'validate']);
 SELECT upsert_ruleset('2942108-7', 'netex', 'netex2gtfs.entur.v2_0_6', 'NeTEx to GTFS Converter by Entur, version v2.0.6', 'conversion_syntax', 'generic', ARRAY ['prepare.download', 'prepare.stopsAndQuays', 'netex.entur.v1_0_1', 'convert']);
 
-
--- To be able to insert entries to the table above, we need an intermediate type. This is going to be placed into the
--- R__seed_data.sql repeatable migration, so the DROP TYPE... needs to be included as well.
 DROP TYPE IF EXISTS rule_severity;
 CREATE TYPE rule_severity AS
 (
@@ -58,7 +55,6 @@ CREATE TYPE rule_severity AS
     severity  TEXT
 );
 
--- Then we need to add a helper function which can handle an array of those intermediate types.
 CREATE OR REPLACE FUNCTION upsert_overrides(
     _ruleset_id BIGINT,
     _overrides rule_severity[]
@@ -66,7 +62,7 @@ CREATE OR REPLACE FUNCTION upsert_overrides(
     LANGUAGE sql
 AS
 $$
-    -- before we insert/update new ones, cleanup old data first
+
 DELETE
 FROM rule_severity_override
 WHERE ruleset_id = _ruleset_id;
@@ -77,8 +73,6 @@ FROM UNNEST(_overrides) AS o(rule_name, severity)
 ON CONFLICT (ruleset_id, name) DO UPDATE SET severity = excluded.severity;
 $$;
 
-
--- Which is then used to upsert all the rule overrides. One SELECT per rule.
 SELECT upsert_overrides((SELECT id FROM ruleset WHERE identifying_name = 'gtfs.canonical.v4_1_0'),
                         ARRAY []::rule_severity[]);
 
