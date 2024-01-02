@@ -15,4 +15,4 @@ just --list
 to list all available recipes with their documentation. Everything should be documented well enough to help you further
 from there.
 
-Copyright Fintraffic 2023. Licensed under the EUPL-1.2 or later.
+Copyright Fintraffic 2023-2024. Licensed under the EUPL-1.2 or later.
