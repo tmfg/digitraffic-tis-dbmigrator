@@ -72,7 +72,7 @@ CREATE TYPE rule_severity AS
 CREATE OR REPLACE FUNCTION upsert_overrides(
     _ruleset_id BIGINT,
     _overrides rule_severity[]
-) RETURNS VOID
+) RETURNS SETOF rule_severity_override
     LANGUAGE sql
 AS
 $$
@@ -81,11 +81,38 @@ DELETE
   FROM rule_severity_override
  WHERE ruleset_id = _ruleset_id;
     -- then upsert the new rows
-INSERT INTO rule_severity_override (ruleset_id, name, severity)
-SELECT _ruleset_id, o.*
-  FROM UNNEST(_overrides) AS o(rule_name, severity)
-    ON CONFLICT (ruleset_id, name) DO UPDATE SET severity = excluded.severity;
+   INSERT INTO rule_severity_override (ruleset_id, name, severity)
+   SELECT _ruleset_id, o.*
+     FROM UNNEST(_overrides) AS o(rule_name, severity)
+       ON CONFLICT (ruleset_id, name) DO UPDATE SET severity = excluded.severity
+RETURNING *;
 $$;
 
 SELECT upsert_overrides((SELECT id FROM ruleset WHERE identifying_name = 'gtfs.canonical.v4_1_0'),
                         ARRAY [('invalid_url', 'WARNING')]::rule_severity[]);
+
+-- ## `upsert_feature_flags`
+--
+-- Supported feature flags injection. We only want to support a specific set of feature flags as determined in the list
+-- below. In some other services feature flags are provided as a set of strings, we do a bit more tracking than that.
+DROP TYPE IF EXISTS feature_flag_names CASCADE;
+CREATE TYPE feature_flag_names AS
+(
+    flag_name TEXT,
+    modified_by TEXT
+);
+
+CREATE OR REPLACE FUNCTION upsert_feature_flags(
+    _feature_flags feature_flag_names[]
+) RETURNS SETOF feature_flag
+    LANGUAGE sql
+AS
+$$
+    -- then upsert the new rows
+   INSERT INTO feature_flag (name, modified_by)
+   SELECT o.flag_name, o.modified_by
+     FROM UNNEST(_feature_flags) AS o(flag_name, modified_by)
+RETURNING *;
+$$;
+
+SELECT upsert_feature_flags(ARRAY [('emails.entryCompleteEmail', 'system'), ('emails.feedStatusEmail', 'system')]::feature_flag_names[]);
