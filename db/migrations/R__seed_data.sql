@@ -51,11 +51,10 @@ BEGIN
 END
 $$;
 
-SELECT upsert_ruleset('2942108-7', 'gtfs', 'gtfs.canonical.v4_0_0', 'Canonical GTFS Validator by MobilityData, version v4.0.0', 'validation_syntax', 'specific', ARRAY ['prepare.download', 'validate']);
-SELECT upsert_ruleset('2942108-7', 'gtfs', 'gtfs.canonical.v4_1_0', 'Canonical GTFS Validator by MobilityData, version v4.1.0', 'validation_syntax', 'generic', ARRAY ['prepare.download', 'validate']);
-SELECT upsert_ruleset('2942108-7', 'netex', 'netex.entur.v1_0_1', 'NeTEx Validator by Entur, version v1.0.1', 'validation_syntax', 'generic', ARRAY ['prepare.download', 'validate']);
-SELECT upsert_ruleset('2942108-7', 'netex', 'netex2gtfs.entur.v2_0_6', 'NeTEx to GTFS Converter by Entur, version v2.0.6', 'conversion_syntax', 'generic', ARRAY ['prepare.download', 'prepare.stopsAndQuays', 'netex.entur.v1_0_1', 'convert']);
-SELECT upsert_ruleset('2942108-7', 'gtfs', 'gtfs2netex.fintraffic.v1_0_0', 'GTFS to NeTEx Converter by Fintraffic, version v1.12.0', 'conversion_syntax', 'generic', ARRAY ['prepare.download', 'gtfs.canonical.v4_1_0', 'convert']);
+SELECT upsert_ruleset('2942108-7', 'gtfs', 'gtfs.canonical', 'Canonical GTFS Validator by MobilityData', 'validation_syntax', 'generic', ARRAY ['prepare.download', 'validate']);
+SELECT upsert_ruleset('2942108-7', 'netex', 'netex.entur', 'NeTEx Validator by Entur', 'validation_syntax', 'generic', ARRAY ['prepare.download', 'validate']);
+SELECT upsert_ruleset('2942108-7', 'netex', 'netex2gtfs.entur', 'NeTEx to GTFS Converter by Entur', 'conversion_syntax', 'generic', ARRAY ['prepare.download', 'prepare.stopsAndQuays', 'netex.entur', 'convert']);
+SELECT upsert_ruleset('2942108-7', 'gtfs', 'gtfs2netex.fintraffic', 'GTFS to NeTEx Converter by Fintraffic', 'conversion_syntax', 'generic', ARRAY ['prepare.download', 'gtfs.canonical', 'convert']);
 
 -- ## `upsert_overrides`
 --
@@ -88,7 +87,7 @@ DELETE
 RETURNING *;
 $$;
 
-SELECT upsert_overrides((SELECT id FROM ruleset WHERE identifying_name = 'gtfs.canonical.v4_1_0'),
+SELECT upsert_overrides((SELECT id FROM ruleset WHERE identifying_name = 'gtfs.canonical'),
                         ARRAY [('invalid_url', 'WARNING')]::rule_severity[]);
 
 -- ## `upsert_feature_flags`
