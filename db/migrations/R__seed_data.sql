@@ -118,6 +118,7 @@ $$
    INSERT INTO feature_flag (name, modified_by)
    SELECT o.flag_name, o.modified_by
      FROM UNNEST(_feature_flags) AS o(flag_name, modified_by)
+       ON CONFLICT (name) DO NOTHING
 RETURNING *;
 $$;
 
