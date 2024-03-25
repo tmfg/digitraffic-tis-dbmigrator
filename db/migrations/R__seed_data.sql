@@ -122,4 +122,8 @@ $$
 RETURNING *;
 $$;
 
-SELECT upsert_feature_flags(ARRAY [('emails.entryCompleteEmail', 'system'), ('emails.feedStatusEmail', 'system')]::feature_flag_names[]);
+SELECT upsert_feature_flags(ARRAY [
+        ('emails.entryCompleteEmail', 'system'),
+        ('emails.feedStatusEmail', 'system'),
+        ('scheduledTasks.oldDataCleanup', 'system')
+    ]::feature_flag_names[]);
