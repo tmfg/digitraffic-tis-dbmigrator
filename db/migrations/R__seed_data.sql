@@ -19,6 +19,7 @@ ON CONFLICT (business_id)
 
 -- !! clean up old versions of the function
 DROP FUNCTION IF EXISTS upsert_ruleset(_business_id TEXT, _transit_data_format transit_data_format, _identifying_name TEXT, _description TEXT, _type TEXT, _category ruleset_category);
+DROP FUNCTION IF EXISTS upsert_ruleset(_business_id TEXT, _transit_data_format transit_data_format, _identifying_name TEXT, _description TEXT, _type TEXT, _category ruleset_category, _deps TEXT[]);
 
 -- !! This is the latest version of this function, should've created original as empty no-op function and have its
 -- !! definition always here. Sorry on my behalf for future maintainers.
@@ -29,7 +30,8 @@ CREATE OR REPLACE FUNCTION upsert_ruleset(
     _description TEXT,
     _type TEXT,
     _category ruleset_category,
-    _deps TEXT[])
+    _before_deps TEXT[],
+    _after_deps TEXT[])
     RETURNS SETOF ruleset
     LANGUAGE plpgsql
 AS
@@ -37,37 +39,39 @@ $$
 DECLARE
 BEGIN
     RETURN QUERY
-        INSERT INTO ruleset (owner_id, category, identifying_name, description, type, format, dependencies)
+        INSERT INTO ruleset (owner_id, category, identifying_name, description, type, format, before_dependencies, after_dependencies)
             VALUES ((SELECT id FROM company WHERE business_id = _business_id),
                     _category,
                     _identifying_name,
                     _description,
                     _type,
                     _transit_data_format,
-                    _deps)
+                    _before_deps,
+                    _after_deps)
             ON CONFLICT (identifying_name)
                 DO UPDATE SET category = _category,
                     owner_id = (SELECT id FROM company WHERE business_id = _business_id),
                     description = _description,
                     type = _type,
                     format = _transit_data_format,
-                    dependencies = _deps
+                    before_dependencies = _before_deps,
+                    after_dependencies = _after_deps
             RETURNING *;
 END
 $$;
 
 -- NOTE: If migrating to new replacement rules, keep old ones and set them as SPECIFIC instead of simply deleting the row!
-SELECT upsert_ruleset('2942108-7', 'gtfs', 'gtfs.canonical.v4_0_0', 'Legacy Canonical GTFS Validator by MobilityData (v4.0.0)', 'validation_syntax', 'specific', ARRAY ['prepare.download', 'validate']);
-SELECT upsert_ruleset('2942108-7', 'gtfs', 'gtfs.canonical.v4_1_0', 'Legacy Canonical GTFS Validator by MobilityData (v4.1.0)', 'validation_syntax', 'specific', ARRAY ['prepare.download', 'validate']);
-SELECT upsert_ruleset('2942108-7', 'netex', 'netex.entur.v1_0_1', 'Legacy NeTEx Validator by Entur, version v1.0.1', 'validation_syntax', 'specific', ARRAY ['prepare.download', 'validate']);
-SELECT upsert_ruleset('2942108-7', 'netex', 'netex2gtfs.entur.v2_0_6', 'Legacy NeTEx to GTFS Converter by Entur, version v2.0.6', 'validation_syntax', 'specific', ARRAY ['prepare.download', 'validate']);
-SELECT upsert_ruleset('2942108-7', 'gtfs', 'gtfs2netex.fintraffic.v1_0_0', 'Legacy GTFS to NeTEx Converter by Fintraffic, version v1.12.0', 'validation_syntax', 'specific', ARRAY ['prepare.download', 'validate']);
+SELECT upsert_ruleset('2942108-7', 'gtfs', 'gtfs.canonical.v4_0_0', 'Legacy Canonical GTFS Validator by MobilityData (v4.0.0)', 'validation_syntax', 'specific', ARRAY ['prepare.download'], ARRAY []::text[]);
+SELECT upsert_ruleset('2942108-7', 'gtfs', 'gtfs.canonical.v4_1_0', 'Legacy Canonical GTFS Validator by MobilityData (v4.1.0)', 'validation_syntax', 'specific', ARRAY ['prepare.download'], ARRAY []::text[]);
+SELECT upsert_ruleset('2942108-7', 'netex', 'netex.entur.v1_0_1', 'Legacy NeTEx Validator by Entur, version v1.0.1', 'validation_syntax', 'specific', ARRAY ['prepare.download'], ARRAY []::text[]);
+SELECT upsert_ruleset('2942108-7', 'netex', 'netex2gtfs.entur.v2_0_6', 'Legacy NeTEx to GTFS Converter by Entur, version v2.0.6', 'validation_syntax', 'specific', ARRAY ['prepare.download'], ARRAY []::text[]);
+SELECT upsert_ruleset('2942108-7', 'gtfs', 'gtfs2netex.fintraffic.v1_0_0', 'Legacy GTFS to NeTEx Converter by Fintraffic, version v1.12.0', 'validation_syntax', 'specific', ARRAY ['prepare.download'], ARRAY []::text[]);
 -- currently available latest&greatest rulesets
-SELECT upsert_ruleset('2942108-7', 'gtfs', 'gtfs.canonical', 'Canonical GTFS Validator by MobilityData', 'validation_syntax', 'generic', ARRAY ['prepare.download', 'validate']);
-SELECT upsert_ruleset('2942108-7', 'netex', 'netex.entur', 'NeTEx Validator by Entur', 'validation_syntax', 'generic', ARRAY ['prepare.download', 'validate']);
-SELECT upsert_ruleset('2942108-7', 'netex', 'netex2gtfs.entur', 'NeTEx to GTFS Converter by Entur', 'conversion_syntax', 'generic', ARRAY ['prepare.download', 'prepare.stopsAndQuays', 'netex.entur', 'convert']);
-SELECT upsert_ruleset('2942108-7', 'gtfs', 'gtfs2netex.fintraffic', 'GTFS to NeTEx Converter by Fintraffic', 'conversion_syntax', 'generic', ARRAY ['prepare.download', 'gtfs.canonical', 'convert']);
-SELECT upsert_ruleset('2942108-7', 'gbfs', 'gbfs.entur', 'GBFS Validator by Entur', 'validation_syntax', 'generic', ARRAY ['prepare.download', 'validate']);
+SELECT upsert_ruleset('2942108-7', 'gtfs', 'gtfs.canonical', 'Canonical GTFS Validator by MobilityData', 'validation_syntax', 'generic', ARRAY ['prepare.download'], ARRAY []::text[]);
+SELECT upsert_ruleset('2942108-7', 'netex', 'netex.entur', 'NeTEx Validator by Entur', 'validation_syntax', 'generic', ARRAY ['prepare.download', 'gtfs2netex.fintraffic'], ARRAY []::text[]);
+SELECT upsert_ruleset('2942108-7', 'netex', 'netex2gtfs.entur', 'NeTEx to GTFS Converter by Entur', 'conversion_syntax', 'generic', ARRAY ['prepare.download', 'prepare.stopsAndQuays', 'netex.entur'], ARRAY ['gtfs.canonical']);
+SELECT upsert_ruleset('2942108-7', 'gtfs', 'gtfs2netex.fintraffic', 'GTFS to NeTEx Converter by Fintraffic', 'conversion_syntax', 'generic', ARRAY ['prepare.download', 'gtfs.canonical'], ARRAY ['netex.entur']);
+SELECT upsert_ruleset('2942108-7', 'gbfs', 'gbfs.entur', 'GBFS Validator by Entur', 'validation_syntax', 'generic', ARRAY ['prepare.download'], ARRAY []::text[]);
 -- ## `upsert_overrides`
 --
 -- Helper function and related logic for upserting ruleset notice overrides, mainly for controlling which rules should
