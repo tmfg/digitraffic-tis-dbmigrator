@@ -68,12 +68,6 @@ SELECT upsert_ruleset('2942108-7', 'netex', 'netex.entur', 'NeTEx Validator by E
 SELECT upsert_ruleset('2942108-7', 'netex', 'netex2gtfs.entur', 'NeTEx to GTFS Converter by Entur', 'conversion_syntax', 'generic', ARRAY ['prepare.download', 'prepare.stopsAndQuays', 'netex.entur', 'convert']);
 SELECT upsert_ruleset('2942108-7', 'gtfs', 'gtfs2netex.fintraffic', 'GTFS to NeTEx Converter by Fintraffic', 'conversion_syntax', 'generic', ARRAY ['prepare.download', 'gtfs.canonical', 'convert']);
 SELECT upsert_ruleset('2942108-7', 'gbfs', 'gbfs.entur', 'GBFS Validator by Entur', 'validation_syntax', 'generic', ARRAY ['prepare.download', 'validate']);
--- same for the public test:
-SELECT upsert_ruleset('public-validation-test-id', 'gtfs', 'gtfs.canonical', 'Canonical GTFS Validator by MobilityData', 'validation_syntax', 'generic', ARRAY ['prepare.download', 'validate']);
-SELECT upsert_ruleset('public-validation-test-id', 'netex', 'netex.entur', 'NeTEx Validator by Entur', 'validation_syntax', 'generic', ARRAY ['prepare.download', 'validate']);
-SELECT upsert_ruleset('public-validation-test-id', 'netex', 'netex2gtfs.entur', 'NeTEx to GTFS Converter by Entur', 'conversion_syntax', 'generic', ARRAY ['prepare.download', 'prepare.stopsAndQuays', 'netex.entur', 'convert']);
-SELECT upsert_ruleset('public-validation-test-id', 'gtfs', 'gtfs2netex.fintraffic', 'GTFS to NeTEx Converter by Fintraffic', 'conversion_syntax', 'generic', ARRAY ['prepare.download', 'gtfs.canonical', 'convert']);
-SELECT upsert_ruleset('public-validation-test-id', 'gbfs', 'gbfs.entur', 'GBFS Validator by Entur', 'validation_syntax', 'generic', ARRAY ['prepare.download', 'validate']);
 -- ## `upsert_overrides`
 --
 -- Helper function and related logic for upserting ruleset notice overrides, mainly for controlling which rules should
