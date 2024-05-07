@@ -64,8 +64,8 @@ $$;
 SELECT upsert_ruleset('2942108-7', 'gtfs', 'gtfs.canonical.v4_0_0', 'Legacy Canonical GTFS Validator by MobilityData (v4.0.0)', 'validation_syntax', 'specific', ARRAY ['prepare.download'], ARRAY []::text[]);
 SELECT upsert_ruleset('2942108-7', 'gtfs', 'gtfs.canonical.v4_1_0', 'Legacy Canonical GTFS Validator by MobilityData (v4.1.0)', 'validation_syntax', 'specific', ARRAY ['prepare.download'], ARRAY []::text[]);
 SELECT upsert_ruleset('2942108-7', 'netex', 'netex.entur.v1_0_1', 'Legacy NeTEx Validator by Entur, version v1.0.1', 'validation_syntax', 'specific', ARRAY ['prepare.download'], ARRAY []::text[]);
-SELECT upsert_ruleset('2942108-7', 'netex', 'netex2gtfs.entur.v2_0_6', 'Legacy NeTEx to GTFS Converter by Entur, version v2.0.6', 'validation_syntax', 'specific', ARRAY ['prepare.download'], ARRAY []::text[]);
-SELECT upsert_ruleset('2942108-7', 'gtfs', 'gtfs2netex.fintraffic.v1_0_0', 'Legacy GTFS to NeTEx Converter by Fintraffic, version v1.12.0', 'validation_syntax', 'specific', ARRAY ['prepare.download'], ARRAY []::text[]);
+SELECT upsert_ruleset('2942108-7', 'netex', 'netex2gtfs.entur.v2_0_6', 'Legacy NeTEx to GTFS Converter by Entur, version v2.0.6', 'conversion_syntax', 'specific', ARRAY ['prepare.download'], ARRAY []::text[]);
+SELECT upsert_ruleset('2942108-7', 'gtfs', 'gtfs2netex.fintraffic.v1_0_0', 'Legacy GTFS to NeTEx Converter by Fintraffic, version v1.12.0', 'conversion_syntax', 'specific', ARRAY ['prepare.download'], ARRAY []::text[]);
 -- currently available latest&greatest rulesets
 SELECT upsert_ruleset('2942108-7', 'gtfs', 'gtfs.canonical', 'Canonical GTFS Validator by MobilityData', 'validation_syntax', 'generic', ARRAY ['prepare.download'], ARRAY []::text[]);
 SELECT upsert_ruleset('2942108-7', 'netex', 'netex.entur', 'NeTEx Validator by Entur', 'validation_syntax', 'generic', ARRAY ['prepare.download'], ARRAY []::text[]);
