@@ -134,6 +134,5 @@ $$;
 SELECT upsert_feature_flags(ARRAY [
         ('emails.entryCompleteEmail', 'system'),
         ('emails.feedStatusEmail', 'system'),
-        ('scheduledTasks.oldDataCleanup', 'system'),
-        ('integrations.msGraph', 'system')
+        ('scheduledTasks.oldDataCleanup', 'system')
     ]::feature_flag_names[]);
