@@ -104,7 +104,7 @@ RETURNING *;
 $$;
 
 SELECT upsert_overrides((SELECT id FROM ruleset WHERE identifying_name = 'gtfs.canonical'),
-                        ARRAY [('invalid_url', 'WARNING')]::rule_severity[]);
+                        ARRAY [('invalid_url', 'WARNING'),('runtime_exception_in_validator_error', 'WARNING')]::rule_severity[]);
 
 -- ## `upsert_feature_flags`
 --
