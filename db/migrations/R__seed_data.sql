@@ -3,13 +3,13 @@
 -- ## Main parent company
 --
 -- Fintraffic is the main company of TIS VACO and forms as basis and parent for all company and relationship data.
-INSERT INTO company (business_id, name)
-     VALUES ('2942108-7', 'Fintraffic Oy')
+INSERT INTO company (business_id, name, website)
+     VALUES ('2942108-7', 'Fintraffic Oy', 'https://www.fintraffic.fi')
 ON CONFLICT (business_id)
          DO UPDATE SET name = 'Fintraffic Oy';
 -- A "fake" company that allows users not belonging to any company to submit enties in a 'public validation test' mode
-INSERT INTO company (business_id, name)
-VALUES ('public-validation-test-id', 'public-validation-test')
+INSERT INTO company (business_id, name, website)
+VALUES ('public-validation-test-id', 'public-validation-test', 'https://www.fintraffic.fi')
 ON CONFLICT (business_id)
     DO UPDATE SET name = 'public-validation-test';
 
