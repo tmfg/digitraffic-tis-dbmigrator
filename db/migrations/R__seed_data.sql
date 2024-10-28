@@ -112,7 +112,8 @@ SELECT upsert_overrides((SELECT id FROM ruleset WHERE identifying_name = 'gtfs.c
                                ('u_r_i_syntax_error', 'WARNING'),
                                ('trip_distance_exceeds_shape_distance', 'WARNING'),
                                ('duplicate_key', 'WARNING'),
-                               ('equal_shape_distance_diff_coordinates', 'INFO')]::rule_severity[]);
+                               ('equal_shape_distance_diff_coordinates', 'INFO'),
+                               ('decreasing_or_equal_stop_time_distance', 'WARNING')]::rule_severity[]);
 
 -- ## `upsert_feature_flags`
 --
