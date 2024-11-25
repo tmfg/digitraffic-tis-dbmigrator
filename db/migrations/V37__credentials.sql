@@ -17,4 +17,9 @@ CREATE TABLE credentials
     details     BYTEA,
     UNIQUE (name, owner_id),
     CONSTRAINT fk_credentials_company_owner_id FOREIGN KEY (owner_id) REFERENCES company (id)
-)
+);
+
+-- link entry to credentials
+ALTER TABLE entry
+  ADD COLUMN credentials_id BIGINT,
+  ADD CONSTRAINT fk_entry_credentials_credentials_id FOREIGN KEY (credentials_id) REFERENCES credentials (id);
