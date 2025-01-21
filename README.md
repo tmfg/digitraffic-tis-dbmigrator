@@ -17,4 +17,4 @@ from there.
 
 ---
 
-Copyright Fintraffic 2023-2024. Licensed under the EUPL-1.2 or later.
+Copyright Fintraffic 2023-2025. Licensed under the EUPL-1.2 or later.
