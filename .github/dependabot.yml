@@ -7,3 +7,7 @@ updates:
       interval: "monthly"
     reviewers:
       - "tmfg/digitraffic-tis-solita"
+    groups:
+      actions-deps:
+        patterns:
+          - "*"
