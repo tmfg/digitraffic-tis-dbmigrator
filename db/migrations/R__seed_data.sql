@@ -143,5 +143,6 @@ $$;
 SELECT upsert_feature_flags(ARRAY [
         ('emails.entryCompleteEmail', 'system'),
         ('emails.feedStatusEmail', 'system'),
-        ('scheduledTasks.oldDataCleanup', 'system')
+        ('scheduledTasks.oldDataCleanup', 'system'),
+        ('tasks.prepareDownload.skipDownloadOnStaleETag', 'system')
     ]::feature_flag_names[]);
