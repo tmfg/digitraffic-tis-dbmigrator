@@ -33,6 +33,8 @@ BEGIN
                         action_taken := TRUE;
                     END IF;
                 END LOOP;
+            EXECUTE 'GRANT SELECT ON entry TO maintain_materialized_views';
+            EXECUTE 'GRANT SELECT ON task TO maintain_materialized_views';
             EXECUTE format('ALTER TABLE %I OWNER TO maintain_materialized_views', vm.view_name);
             action_taken := TRUE;
             IF action_taken THEN
