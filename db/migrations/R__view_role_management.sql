@@ -1,7 +1,11 @@
 -- 1. create needed role for view maintenance
 CREATE ROLE maintain_materialized_views;
 
--- 2. create special type and function for creating the necessary DDL on demand
+-- 2. grants for 'statistics' view's dependent tables
+GRANT SELECT ON entry TO maintain_materialized_views;
+GRANT SELECT ON task TO maintain_materialized_views;
+
+-- 3. create special type and function for creating the necessary DDL on demand
 DROP TYPE IF EXISTS view_maintenance CASCADE;
 CREATE TYPE view_maintenance AS
 (
@@ -22,7 +26,7 @@ BEGIN
     FOR vm IN SELECT * FROM unnest(_view_maintainers)
         LOOP
             action_taken := FALSE;
-            -- 3. grant users privileges to the maintenance role
+            -- 4. grant users privileges to the maintenance role
             FOREACH maintainer IN ARRAY vm.maintainers
                 LOOP
                     IF EXISTS (SELECT 1
@@ -30,8 +34,6 @@ BEGIN
                                WHERE rolname = maintainer)
                     THEN
                         EXECUTE format('GRANT maintain_materialized_views TO %I', maintainer);
-                        EXECUTE format('GRANT SELECT ON entry TO %I', maintainer);
-                        EXECUTE format('GRANT SELECT ON task TO %I', maintainer);
                         action_taken := TRUE;
                     END IF;
                 END LOOP;
