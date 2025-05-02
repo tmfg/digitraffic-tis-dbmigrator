@@ -1,5 +1,15 @@
 -- 1. create needed role for view maintenance
-CREATE ROLE maintain_materialized_views;
+DO
+$$
+    BEGIN
+        IF NOT EXISTS (
+            SELECT FROM pg_catalog.pg_roles
+            WHERE rolname = 'maintain_materialized_views'
+        ) THEN
+            CREATE ROLE maintain_materialized_views;
+        END IF;
+    END
+$$;
 
 -- 2. grants for 'statistics' view's dependent tables
 GRANT SELECT ON entry TO maintain_materialized_views;
@@ -26,6 +36,7 @@ BEGIN
     FOR vm IN SELECT * FROM unnest(_view_maintainers)
         LOOP
             action_taken := FALSE;
+            EXECUTE format('GRANT SELECT, INSERT, UPDATE, DELETE ON %I TO maintain_materialized_views', vm.view_name);
             -- 4. grant users privileges to the maintenance role
             FOREACH maintainer IN ARRAY vm.maintainers
                 LOOP
