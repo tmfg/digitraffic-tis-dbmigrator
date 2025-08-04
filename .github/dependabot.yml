@@ -5,8 +5,6 @@ updates:
     directory: "/"
     schedule:
       interval: "monthly"
-    reviewers:
-      - "tmfg/digitraffic-tis-solita"
     groups:
       actions-deps:
         patterns:
