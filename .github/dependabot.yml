@@ -6,8 +6,16 @@ updates:
     schedule:
       interval: "monthly"
     cooldown:
-      default-days: 2
+      default-days: 7
     groups:
       actions-deps:
         patterns:
           - "*"
+  # keep used Dockerfile up to date
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    cooldown:
+      default-days: 7 # Wait 7 days for any update
+      semver-major-days: 14 # Wait 14 days for major version bumps
