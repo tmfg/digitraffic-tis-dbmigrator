@@ -45,7 +45,7 @@ jobs:
           ECR_REPOSITORY: "digitraffic-tis-dbmigrator"
           IMAGE_TAG: ${{ steps.version.outputs.version }}
         run: |
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
+          docker build --build-arg GITHUB_SHA=${{ github.sha }} -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
           docker tag $ECR_REGISTRY/$ECR_REPOSITORY:latest $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
