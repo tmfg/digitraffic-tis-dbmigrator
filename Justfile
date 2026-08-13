@@ -12,7 +12,7 @@ flyway cmd="help":
     -e FLYWAY_URL='jdbc:postgresql://host.docker.internal:54321/vaco' \
     -e FLYWAY_USER=postgres \
     -e FLYWAY_PASSWORD=dwULL632mdJZ \
-    flyway/flyway:11-alpine {{cmd}}
+    flyway/flyway:13-alpine {{cmd}}
 
 # Run database migrations
 migrate: (flyway "migrate")
