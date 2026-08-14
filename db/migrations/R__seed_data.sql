@@ -37,26 +37,34 @@ CREATE OR REPLACE FUNCTION upsert_ruleset(
 AS
 $$
 DECLARE
+    _company_id BIGINT;
+    _ruleset_id BIGINT;
 BEGIN
-    RETURN QUERY
-        INSERT INTO ruleset (owner_id, category, identifying_name, description, type, format, before_dependencies, after_dependencies)
-            VALUES ((SELECT id FROM company WHERE business_id = _business_id),
-                    _category,
-                    _identifying_name,
-                    _description,
-                    _type,
-                    _transit_data_format,
-                    _before_deps,
-                    _after_deps)
-            ON CONFLICT (identifying_name)
-                DO UPDATE SET category = _category,
-                    owner_id = (SELECT id FROM company WHERE business_id = _business_id),
-                    description = _description,
-                    type = _type,
-                    format = _transit_data_format,
-                    before_dependencies = _before_deps,
-                    after_dependencies = _after_deps
-            RETURNING *;
+    SELECT id INTO _company_id FROM company WHERE business_id = _business_id;
+
+    INSERT INTO ruleset (category, identifying_name, description, type, format, before_dependencies, after_dependencies)
+        VALUES (_category,
+                _identifying_name,
+                _description,
+                _type,
+                _transit_data_format,
+                _before_deps,
+                _after_deps)
+        ON CONFLICT (identifying_name)
+            DO UPDATE SET category = _category,
+                description = _description,
+                type = _type,
+                format = _transit_data_format,
+                before_dependencies = _before_deps,
+                after_dependencies = _after_deps
+        RETURNING id INTO _ruleset_id;
+
+    -- ruleset_access is the sole source of truth for access resolution (see RulesetRepository.findRulesets)
+    INSERT INTO ruleset_access (company_id, ruleset_id)
+         VALUES (_company_id, _ruleset_id)
+    ON CONFLICT (company_id, ruleset_id) DO NOTHING;
+
+    RETURN QUERY SELECT * FROM ruleset WHERE id = _ruleset_id;
 END
 $$;
 
