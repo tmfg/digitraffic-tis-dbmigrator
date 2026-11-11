@@ -12,6 +12,12 @@ INSERT INTO company (business_id, name, website)
 VALUES ('public-validation-test-id', 'public-validation-test', 'https://www.fintraffic.fi')
 ON CONFLICT (business_id)
     DO UPDATE SET name = 'public-validation-test';
+-- A VACO System "company", as a way to group together entries run by the system e.g. on scheduled basis,
+-- and a way to assign ownership of a rule that is only executable by VACO as a system and not visible anyhow in UI as an option during data submission stage:
+INSERT INTO company (business_id, name, website, roles, codespaces)
+VALUES ('2302570-2', 'Finavia Oyj', 'https://www.finavia.fi/fi', '{"authority"}', ARRAY['FVN'])
+    ON CONFLICT (business_id)
+         DO UPDATE SET name = 'Finavia Oyj', codespaces = ARRAY['FVN'];
 
 -- ## `upsert_ruleset`
 --
@@ -72,6 +78,10 @@ SELECT upsert_ruleset('2942108-7', 'netex', 'netex.entur', 'NeTEx Validator by E
 SELECT upsert_ruleset('2942108-7', 'netex', 'netex2gtfs.entur', 'NeTEx to GTFS Converter by Entur', 'conversion_syntax', 'generic', ARRAY ['prepare.download', 'prepare.stopsAndQuays', 'netex.entur'], ARRAY ['gtfs.canonical']);
 SELECT upsert_ruleset('2942108-7', 'gtfs', 'gtfs2netex.fintraffic', 'GTFS to NeTEx Converter by Fintraffic', 'conversion_syntax', 'generic', ARRAY ['prepare.download', 'gtfs.canonical'], ARRAY ['netex.entur']);
 SELECT upsert_ruleset('2942108-7', 'gbfs', 'gbfs.entur', 'GBFS Validator by Entur', 'validation_syntax', 'generic', ARRAY ['prepare.download'], ARRAY []::text[]);
+-- These rules can only be executed by the "system", e.g. on a scheduled basis and these are not visible as an option during user's data submission:
+SELECT upsert_ruleset('2302570-2', 'ssim', 'ssim.fintraffic', 'SSIM Parser and Validator by Fintraffic', 'validation_syntax', 'generic', ARRAY ['prepare.download'], ARRAY []::text[]);
+SELECT upsert_ruleset('2302570-2', 'ssim', 'ssim2netex.fintraffic', 'SSIM to NeTEx Converter by Fintraffic', 'conversion_syntax', 'generic', ARRAY ['ssim.fintraffic'], ARRAY ['netex.entur', 'netex2gtfs.entur', 'gtfs.canonical']);
+
 -- ## `upsert_overrides`
 --
 -- Helper function and related logic for upserting ruleset notice overrides, mainly for controlling which rules should
