@@ -12,6 +12,11 @@ INSERT INTO company (business_id, name, website)
 VALUES ('public-validation-test-id', 'public-validation-test', 'https://www.fintraffic.fi')
 ON CONFLICT (business_id)
     DO UPDATE SET name = 'public-validation-test';
+-- Finavia, the owner of the scheduled SSIM data entries
+INSERT INTO company (business_id, name, website, roles, codespaces)
+VALUES ('2302570-2', 'Finavia Oyj', 'https://finavia.fi/fi', '{"authority"}', ARRAY['fvn'])
+    ON CONFLICT (business_id)
+         DO UPDATE SET name = 'Finavia Oyj', codespaces = ARRAY['fvn'];
 -- Traficom is the national transport authority, positioned as Fintraffic's parent in the partnership hierarchy.
 INSERT INTO company (business_id, name, website)
      VALUES ('2924753-3', 'Liikenne- ja viestintävirasto Traficom', 'https://traficom.fi/fi')
@@ -85,6 +90,9 @@ SELECT upsert_ruleset('2942108-7', 'netex', 'netex.entur', 'NeTEx Validator by E
 SELECT upsert_ruleset('2942108-7', 'netex', 'netex2gtfs.entur', 'NeTEx to GTFS Converter by Entur', 'conversion_syntax', 'generic', ARRAY ['prepare.download', 'prepare.stopsAndQuays', 'netex.entur'], ARRAY ['gtfs.canonical']);
 SELECT upsert_ruleset('2942108-7', 'gtfs', 'gtfs2netex.fintraffic', 'GTFS to NeTEx Converter by Fintraffic', 'conversion_syntax', 'generic', ARRAY ['prepare.download', 'gtfs.canonical'], ARRAY ['netex.entur']);
 SELECT upsert_ruleset('2942108-7', 'gbfs', 'gbfs.entur', 'GBFS Validator by Entur', 'validation_syntax', 'generic', ARRAY ['prepare.download'], ARRAY []::text[]);
+SELECT upsert_ruleset('2302570-2', 'ssim', 'ssim.fintraffic', 'SSIM Parser and Validator by Fintraffic', 'validation_syntax', 'generic', ARRAY ['prepare.download'], ARRAY []::text[]);
+SELECT upsert_ruleset('2302570-2', 'ssim', 'ssim2netex.fintraffic', 'SSIM to NeTEx Converter by Fintraffic', 'conversion_syntax', 'generic', ARRAY ['ssim.fintraffic'], ARRAY ['netex.entur', 'netex2gtfs.entur', 'gtfs.canonical']);
+
 
 -- Traficom is the parent of Fintraffic partnership hierarchy
 -- and needs the same rulesets Fintraffic uses to validate/convert its own data:
