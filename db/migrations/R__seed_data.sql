@@ -14,7 +14,7 @@ ON CONFLICT (business_id)
     DO UPDATE SET name = 'public-validation-test';
 -- Finavia, the owner of the scheduled SSIM data entries
 INSERT INTO company (business_id, name, website, roles, codespaces)
-VALUES ('2302570-2', 'Finavia Oyj', 'https://www.finavia.fi/fi', '{"authority"}', ARRAY['fvn'])
+VALUES ('2302570-2', 'Finavia Oyj', 'https://finavia.fi/fi', '{"authority"}', ARRAY['fvn'])
     ON CONFLICT (business_id)
          DO UPDATE SET name = 'Finavia Oyj', codespaces = ARRAY['fvn'];
 -- Traficom is the national transport authority, positioned as Fintraffic's parent in the partnership hierarchy.

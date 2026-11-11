@@ -1,1 +1,1 @@
-ALTER TYPE transit_data_format ADD VALUE 'ssim';
+ALTER TYPE transit_data_format ADD VALUE IF NOT EXISTS 'ssim';
