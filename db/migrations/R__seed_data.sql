@@ -12,12 +12,16 @@ INSERT INTO company (business_id, name, website)
 VALUES ('public-validation-test-id', 'public-validation-test', 'https://www.fintraffic.fi')
 ON CONFLICT (business_id)
     DO UPDATE SET name = 'public-validation-test';
--- A VACO System "company", as a way to group together entries run by the system e.g. on scheduled basis,
--- and a way to assign ownership of a rule that is only executable by VACO as a system and not visible anyhow in UI as an option during data submission stage:
+-- Finavia, the owner of the scheduled SSIM data entries
 INSERT INTO company (business_id, name, website, roles, codespaces)
-VALUES ('2302570-2', 'Finavia Oyj', 'https://www.finavia.fi/fi', '{"authority"}', ARRAY['FVN'])
+VALUES ('2302570-2', 'Finavia Oyj', 'https://www.finavia.fi/fi', '{"authority"}', ARRAY['fvn'])
     ON CONFLICT (business_id)
-         DO UPDATE SET name = 'Finavia Oyj', codespaces = ARRAY['FVN'];
+         DO UPDATE SET name = 'Finavia Oyj', codespaces = ARRAY['fvn'];
+-- Traficom is the national transport authority, positioned as Fintraffic's parent in the partnership hierarchy.
+INSERT INTO company (business_id, name, website)
+     VALUES ('2924753-3', 'Liikenne- ja viestintävirasto Traficom', 'https://traficom.fi/fi')
+ON CONFLICT (business_id)
+         DO UPDATE SET name = 'Liikenne- ja viestintävirasto Traficom';
 
 -- ## `upsert_ruleset`
 --
@@ -43,26 +47,34 @@ CREATE OR REPLACE FUNCTION upsert_ruleset(
 AS
 $$
 DECLARE
+    _company_id BIGINT;
+    _ruleset_id BIGINT;
 BEGIN
-    RETURN QUERY
-        INSERT INTO ruleset (owner_id, category, identifying_name, description, type, format, before_dependencies, after_dependencies)
-            VALUES ((SELECT id FROM company WHERE business_id = _business_id),
-                    _category,
-                    _identifying_name,
-                    _description,
-                    _type,
-                    _transit_data_format,
-                    _before_deps,
-                    _after_deps)
-            ON CONFLICT (identifying_name)
-                DO UPDATE SET category = _category,
-                    owner_id = (SELECT id FROM company WHERE business_id = _business_id),
-                    description = _description,
-                    type = _type,
-                    format = _transit_data_format,
-                    before_dependencies = _before_deps,
-                    after_dependencies = _after_deps
-            RETURNING *;
+    SELECT id INTO _company_id FROM company WHERE business_id = _business_id;
+
+    INSERT INTO ruleset (category, identifying_name, description, type, format, before_dependencies, after_dependencies)
+        VALUES (_category,
+                _identifying_name,
+                _description,
+                _type,
+                _transit_data_format,
+                _before_deps,
+                _after_deps)
+        ON CONFLICT (identifying_name)
+            DO UPDATE SET category = _category,
+                description = _description,
+                type = _type,
+                format = _transit_data_format,
+                before_dependencies = _before_deps,
+                after_dependencies = _after_deps
+        RETURNING id INTO _ruleset_id;
+
+    -- ruleset_access is the sole source of truth for access resolution (see RulesetRepository.findRulesets)
+    INSERT INTO ruleset_access (company_id, ruleset_id)
+         VALUES (_company_id, _ruleset_id)
+    ON CONFLICT (company_id, ruleset_id) DO NOTHING;
+
+    RETURN QUERY SELECT * FROM ruleset WHERE id = _ruleset_id;
 END
 $$;
 
@@ -78,9 +90,19 @@ SELECT upsert_ruleset('2942108-7', 'netex', 'netex.entur', 'NeTEx Validator by E
 SELECT upsert_ruleset('2942108-7', 'netex', 'netex2gtfs.entur', 'NeTEx to GTFS Converter by Entur', 'conversion_syntax', 'generic', ARRAY ['prepare.download', 'prepare.stopsAndQuays', 'netex.entur'], ARRAY ['gtfs.canonical']);
 SELECT upsert_ruleset('2942108-7', 'gtfs', 'gtfs2netex.fintraffic', 'GTFS to NeTEx Converter by Fintraffic', 'conversion_syntax', 'generic', ARRAY ['prepare.download', 'gtfs.canonical'], ARRAY ['netex.entur']);
 SELECT upsert_ruleset('2942108-7', 'gbfs', 'gbfs.entur', 'GBFS Validator by Entur', 'validation_syntax', 'generic', ARRAY ['prepare.download'], ARRAY []::text[]);
--- These rules can only be executed by the "system", e.g. on a scheduled basis and these are not visible as an option during user's data submission:
 SELECT upsert_ruleset('2302570-2', 'ssim', 'ssim.fintraffic', 'SSIM Parser and Validator by Fintraffic', 'validation_syntax', 'generic', ARRAY ['prepare.download'], ARRAY []::text[]);
 SELECT upsert_ruleset('2302570-2', 'ssim', 'ssim2netex.fintraffic', 'SSIM to NeTEx Converter by Fintraffic', 'conversion_syntax', 'generic', ARRAY ['ssim.fintraffic'], ARRAY ['netex.entur', 'netex2gtfs.entur', 'gtfs.canonical']);
+
+
+-- Traficom is the parent of Fintraffic partnership hierarchy
+-- and needs the same rulesets Fintraffic uses to validate/convert its own data:
+-- GTFS and NeTEx validation, and conversion in both directions.
+INSERT INTO ruleset_access (company_id, ruleset_id)
+SELECT c.id, r.id
+  FROM company c, ruleset r
+ WHERE c.business_id = '2924753-3'
+   AND r.identifying_name IN ('gtfs.canonical', 'netex.entur', 'gtfs2netex.fintraffic', 'netex2gtfs.entur')
+ON CONFLICT (company_id, ruleset_id) DO NOTHING;
 
 -- ## `upsert_overrides`
 --
